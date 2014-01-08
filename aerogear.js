@@ -1,4 +1,4 @@
-/*! AeroGear JavaScript Library - v1.3.1 - 2013-12-11
+/*! AeroGear JavaScript Library - v1.3.2 - 2014-01-08
 * https://github.com/aerogear/aerogear-js
 * JBoss, Home of Professional Open Source
 * Copyright Red Hat, Inc., and individual contributors
@@ -3013,7 +3013,7 @@ AeroGear.DataManager.adapters.WebSQL.prototype.read = function( id, options ) {
         sql = "SELECT * FROM " + storeName;
 
         if( id ) {
-            sql += " WHERE ID = " + id;
+            sql += " WHERE ID = '" + id + "'";
         }
 
         database.transaction( function( transaction ) {
