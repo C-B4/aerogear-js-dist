@@ -1,4 +1,4 @@
-/*! AeroGear JavaScript Library - v2.0.0 - 2014-10-22
+/*! AeroGear JavaScript Library - v2.1.0-dev - 2015-03-10
 * https://github.com/aerogear/aerogear-js
 * JBoss, Home of Professional Open Source
 * Copyright Red Hat, Inc., and individual contributors
@@ -384,62 +384,6 @@ AeroGear.extend = function() {
   _global.uuid = uuid;
 }());
 
-;(function () {
-
-  var
-    object = typeof window != 'undefined' ? window : exports,
-    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
-    INVALID_CHARACTER_ERR = (function () {
-      // fabricate a suitable error object
-      try { document.createElement('$'); }
-      catch (error) { return error; }}());
-
-  // encoder
-  // [https://gist.github.com/999166] by [https://github.com/nignag]
-  object.btoa || (
-  object.btoa = function (input) {
-    for (
-      // initialize result and counter
-      var block, charCode, idx = 0, map = chars, output = '';
-      // if the next input index does not exist:
-      //   change the mapping table to "="
-      //   check if d has no fractional digits
-      input.charAt(idx | 0) || (map = '=', idx % 1);
-      // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-      output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-    ) {
-      charCode = input.charCodeAt(idx += 3/4);
-      if (charCode > 0xFF) throw INVALID_CHARACTER_ERR;
-      block = block << 8 | charCode;
-    }
-    return output;
-  });
-
-  // decoder
-  // [https://gist.github.com/1020396] by [https://github.com/atk]
-  object.atob || (
-  object.atob = function (input) {
-    input = input.replace(/=+$/, '')
-    if (input.length % 4 == 1) throw INVALID_CHARACTER_ERR;
-    for (
-      // initialize result and counters
-      var bc = 0, bs, buffer, idx = 0, output = '';
-      // get next character
-      buffer = input.charAt(idx++);
-      // character found in table? initialize bit storage and add its ascii value;
-      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
-        // and if not first of each 4 characters,
-        // convert the first 8 bits to one ascii character
-        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
-    ) {
-      // try to find character in table (0-63, not found => -1)
-      buffer = chars.indexOf(buffer);
-    }
-    return output;
-  });
-
-}());
-
 "use strict";var r=void 0,t=!0,u=!1;var sjcl={cipher:{},hash:{},keyexchange:{},mode:{},misc:{},codec:{},exception:{corrupt:function(a){this.toString=function(){return"CORRUPT: "+this.message};this.message=a},invalid:function(a){this.toString=function(){return"INVALID: "+this.message};this.message=a},bug:function(a){this.toString=function(){return"BUG: "+this.message};this.message=a},notReady:function(a){this.toString=function(){return"NOT READY: "+this.message};this.message=a}}};
 "undefined"!=typeof module&&module.exports&&(module.exports=sjcl);
 sjcl.cipher.aes=function(a){this.n[0][0][0]||this.K();var b,c,d,e,f=this.n[0][4],g=this.n[1];b=a.length;var h=1;if(4!==b&&6!==b&&8!==b)throw new sjcl.exception.invalid("invalid aes key size");this.c=[d=a.slice(0),e=[]];for(a=b;a<4*b+28;a++){c=d[a-1];if(0===a%b||8===b&&4===a%b)c=f[c>>>24]<<24^f[c>>16&255]<<16^f[c>>8&255]<<8^f[c&255],0===a%b&&(c=c<<8^c>>>24^h<<24,h=h<<1^283*(h>>7));d[a]=d[a-b]^c}for(b=0;a;b++,a--)c=d[b&3?a:a-4],e[b]=4>=a||4>b?c:g[0][f[c>>>24]]^g[1][f[c>>16&255]]^g[2][f[c>>8&255]]^g[3][f[c&
@@ -504,902 +448,6 @@ d===r&&(d=sjcl.bn.random(b.r,c));c=b.G.mult(d);return{pub:new sjcl.ecc[a].public
 sjcl.ecc.P("ecdsa");sjcl.ecc.ecdsa.secretKey.prototype={sign:function(a,b,c,d){sjcl.bitArray.bitLength(a)>this.i&&(a=sjcl.bitArray.clamp(a,this.i));var e=this.f.r,f=e.bitLength();d=d||sjcl.bn.random(e.sub(1),b).add(1);b=this.f.G.mult(d).x.mod(e);a=sjcl.bn.fromBits(a).add(b.mul(this.t));c=c?a.inverseMod(e).mul(d).mod(e):a.mul(d.inverseMod(e)).mod(e);return sjcl.bitArray.concat(b.toBits(f),c.toBits(f))}};
 sjcl.ecc.ecdsa.publicKey.prototype={verify:function(a,b,c){sjcl.bitArray.bitLength(a)>this.i&&(a=sjcl.bitArray.clamp(a,this.i));var d=sjcl.bitArray,e=this.f.r,f=this.i,g=sjcl.bn.fromBits(d.bitSlice(b,0,f)),d=sjcl.bn.fromBits(d.bitSlice(b,f,2*f)),h=c?d:d.inverseMod(e),f=sjcl.bn.fromBits(a).mul(h).mod(e),h=g.mul(h).mod(e),f=this.f.G.mult2(f,h,this.A).x;if(g.equals(0)||d.equals(0)||g.greaterEquals(e)||d.greaterEquals(e)||!f.equals(g)){if(c===r)return this.verify(a,b,t);throw new sjcl.exception.corrupt("signature didn't check out");
 }return t}};
-
-(function() {
-var define, requireModule, require, requirejs;
-
-(function() {
-  var registry = {}, seen = {};
-
-  define = function(name, deps, callback) {
-    registry[name] = { deps: deps, callback: callback };
-  };
-
-  requirejs = require = requireModule = function(name) {
-  requirejs._eak_seen = registry;
-
-    if (seen[name]) { return seen[name]; }
-    seen[name] = {};
-
-    if (!registry[name]) {
-      throw new Error("Could not find module " + name);
-    }
-
-    var mod = registry[name],
-        deps = mod.deps,
-        callback = mod.callback,
-        reified = [],
-        exports;
-
-    for (var i=0, l=deps.length; i<l; i++) {
-      if (deps[i] === 'exports') {
-        reified.push(exports = {});
-      } else {
-        reified.push(requireModule(resolve(deps[i])));
-      }
-    }
-
-    var value = callback.apply(this, reified);
-    return seen[name] = exports || value;
-
-    function resolve(child) {
-      if (child.charAt(0) !== '.') { return child; }
-      var parts = child.split("/");
-      var parentBase = name.split("/").slice(0, -1);
-
-      for (var i=0, l=parts.length; i<l; i++) {
-        var part = parts[i];
-
-        if (part === '..') { parentBase.pop(); }
-        else if (part === '.') { continue; }
-        else { parentBase.push(part); }
-      }
-
-      return parentBase.join("/");
-    }
-  };
-})();
-
-define("promise/all", 
-  ["./utils","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    /* global toString */
-
-    var isArray = __dependency1__.isArray;
-    var isFunction = __dependency1__.isFunction;
-
-    /**
-      Returns a promise that is fulfilled when all the given promises have been
-      fulfilled, or rejected if any of them become rejected. The return promise
-      is fulfilled with an array that gives all the values in the order they were
-      passed in the `promises` array argument.
-
-      Example:
-
-      ```javascript
-      var promise1 = RSVP.resolve(1);
-      var promise2 = RSVP.resolve(2);
-      var promise3 = RSVP.resolve(3);
-      var promises = [ promise1, promise2, promise3 ];
-
-      RSVP.all(promises).then(function(array){
-        // The array here would be [ 1, 2, 3 ];
-      });
-      ```
-
-      If any of the `promises` given to `RSVP.all` are rejected, the first promise
-      that is rejected will be given as an argument to the returned promises's
-      rejection handler. For example:
-
-      Example:
-
-      ```javascript
-      var promise1 = RSVP.resolve(1);
-      var promise2 = RSVP.reject(new Error("2"));
-      var promise3 = RSVP.reject(new Error("3"));
-      var promises = [ promise1, promise2, promise3 ];
-
-      RSVP.all(promises).then(function(array){
-        // Code here never runs because there are rejected promises!
-      }, function(error) {
-        // error.message === "2"
-      });
-      ```
-
-      @method all
-      @for RSVP
-      @param {Array} promises
-      @param {String} label
-      @return {Promise} promise that is fulfilled when all `promises` have been
-      fulfilled, or rejected if any of them become rejected.
-    */
-    function all(promises) {
-      /*jshint validthis:true */
-      var Promise = this;
-
-      if (!isArray(promises)) {
-        throw new TypeError('You must pass an array to all.');
-      }
-
-      return new Promise(function(resolve, reject) {
-        var results = [], remaining = promises.length,
-        promise;
-
-        if (remaining === 0) {
-          resolve([]);
-        }
-
-        function resolver(index) {
-          return function(value) {
-            resolveAll(index, value);
-          };
-        }
-
-        function resolveAll(index, value) {
-          results[index] = value;
-          if (--remaining === 0) {
-            resolve(results);
-          }
-        }
-
-        for (var i = 0; i < promises.length; i++) {
-          promise = promises[i];
-
-          if (promise && isFunction(promise.then)) {
-            promise.then(resolver(i), reject);
-          } else {
-            resolveAll(i, promise);
-          }
-        }
-      });
-    }
-
-    __exports__.all = all;
-  });
-define("promise/asap", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    var browserGlobal = (typeof window !== 'undefined') ? window : {};
-    var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-    var local = (typeof global !== 'undefined') ? global : this;
-
-    // node
-    function useNextTick() {
-      return function() {
-        process.nextTick(flush);
-      };
-    }
-
-    function useMutationObserver() {
-      var iterations = 0;
-      var observer = new BrowserMutationObserver(flush);
-      var node = document.createTextNode('');
-      observer.observe(node, { characterData: true });
-
-      return function() {
-        node.data = (iterations = ++iterations % 2);
-      };
-    }
-
-    function useSetTimeout() {
-      return function() {
-        local.setTimeout(flush, 1);
-      };
-    }
-
-    var queue = [];
-    function flush() {
-      for (var i = 0; i < queue.length; i++) {
-        var tuple = queue[i];
-        var callback = tuple[0], arg = tuple[1];
-        callback(arg);
-      }
-      queue = [];
-    }
-
-    var scheduleFlush;
-
-    // Decide what async method to use to triggering processing of queued callbacks:
-    if (typeof process !== 'undefined' && {}.toString.call(process) === '[object process]') {
-      scheduleFlush = useNextTick();
-    } else if (BrowserMutationObserver) {
-      scheduleFlush = useMutationObserver();
-    } else {
-      scheduleFlush = useSetTimeout();
-    }
-
-    function asap(callback, arg) {
-      var length = queue.push([callback, arg]);
-      if (length === 1) {
-        // If length is 1, that means that we need to schedule an async flush.
-        // If additional callbacks are queued before the queue is flushed, they
-        // will be processed by this flush that we are scheduling.
-        scheduleFlush();
-      }
-    }
-
-    __exports__.asap = asap;
-  });
-define("promise/cast", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    /**
-      `RSVP.Promise.cast` returns the same promise if that promise shares a constructor
-      with the promise being casted.
-
-      Example:
-
-      ```javascript
-      var promise = RSVP.resolve(1);
-      var casted = RSVP.Promise.cast(promise);
-
-      console.log(promise === casted); // true
-      ```
-
-      In the case of a promise whose constructor does not match, it is assimilated.
-      The resulting promise will fulfill or reject based on the outcome of the
-      promise being casted.
-
-      In the case of a non-promise, a promise which will fulfill with that value is
-      returned.
-
-      Example:
-
-      ```javascript
-      var value = 1; // could be a number, boolean, string, undefined...
-      var casted = RSVP.Promise.cast(value);
-
-      console.log(value === casted); // false
-      console.log(casted instanceof RSVP.Promise) // true
-
-      casted.then(function(val) {
-        val === value // => true
-      });
-      ```
-
-      `RSVP.Promise.cast` is similar to `RSVP.resolve`, but `RSVP.Promise.cast` differs in the
-      following ways:
-      * `RSVP.Promise.cast` serves as a memory-efficient way of getting a promise, when you
-      have something that could either be a promise or a value. RSVP.resolve
-      will have the same effect but will create a new promise wrapper if the
-      argument is a promise.
-      * `RSVP.Promise.cast` is a way of casting incoming thenables or promise subclasses to
-      promises of the exact class specified, so that the resulting object's `then` is
-      ensured to have the behavior of the constructor you are calling cast on (i.e., RSVP.Promise).
-
-      @method cast
-      @for RSVP
-      @param {Object} object to be casted
-      @return {Promise} promise that is fulfilled when all properties of `promises`
-      have been fulfilled, or rejected if any of them become rejected.
-    */
-
-
-    function cast(object) {
-      /*jshint validthis:true */
-      if (object && typeof object === 'object' && object.constructor === this) {
-        return object;
-      }
-
-      var Promise = this;
-
-      return new Promise(function(resolve) {
-        resolve(object);
-      });
-    }
-
-    __exports__.cast = cast;
-  });
-define("promise/config", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    var config = {
-      instrument: false
-    };
-
-    function configure(name, value) {
-      if (arguments.length === 2) {
-        config[name] = value;
-      } else {
-        return config[name];
-      }
-    }
-
-    __exports__.config = config;
-    __exports__.configure = configure;
-  });
-define("promise/polyfill", 
-  ["./promise","./utils","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    var RSVPPromise = __dependency1__.Promise;
-    var isFunction = __dependency2__.isFunction;
-
-    function polyfill() {
-      var es6PromiseSupport = 
-        "Promise" in window &&
-        // Some of these methods are missing from
-        // Firefox/Chrome experimental implementations
-        "cast" in window.Promise &&
-        "resolve" in window.Promise &&
-        "reject" in window.Promise &&
-        "all" in window.Promise &&
-        "race" in window.Promise &&
-        // Older version of the spec had a resolver object
-        // as the arg rather than a function
-        (function() {
-          var resolve;
-          new window.Promise(function(r) { resolve = r; });
-          return isFunction(resolve);
-        }());
-
-      if (!es6PromiseSupport) {
-        window.Promise = RSVPPromise;
-      }
-    }
-
-    __exports__.polyfill = polyfill;
-  });
-define("promise/promise", 
-  ["./config","./utils","./cast","./all","./race","./resolve","./reject","./asap","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __exports__) {
-    "use strict";
-    var config = __dependency1__.config;
-    var configure = __dependency1__.configure;
-    var objectOrFunction = __dependency2__.objectOrFunction;
-    var isFunction = __dependency2__.isFunction;
-    var now = __dependency2__.now;
-    var cast = __dependency3__.cast;
-    var all = __dependency4__.all;
-    var race = __dependency5__.race;
-    var staticResolve = __dependency6__.resolve;
-    var staticReject = __dependency7__.reject;
-    var asap = __dependency8__.asap;
-
-    var counter = 0;
-
-    config.async = asap; // default async is asap;
-
-    function Promise(resolver) {
-      if (!isFunction(resolver)) {
-        throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
-      }
-
-      if (!(this instanceof Promise)) {
-        throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-      }
-
-      this._subscribers = [];
-
-      invokeResolver(resolver, this);
-    }
-
-    function invokeResolver(resolver, promise) {
-      function resolvePromise(value) {
-        resolve(promise, value);
-      }
-
-      function rejectPromise(reason) {
-        reject(promise, reason);
-      }
-
-      try {
-        resolver(resolvePromise, rejectPromise);
-      } catch(e) {
-        rejectPromise(e);
-      }
-    }
-
-    function invokeCallback(settled, promise, callback, detail) {
-      var hasCallback = isFunction(callback),
-          value, error, succeeded, failed;
-
-      if (hasCallback) {
-        try {
-          value = callback(detail);
-          succeeded = true;
-        } catch(e) {
-          failed = true;
-          error = e;
-        }
-      } else {
-        value = detail;
-        succeeded = true;
-      }
-
-      if (handleThenable(promise, value)) {
-        return;
-      } else if (hasCallback && succeeded) {
-        resolve(promise, value);
-      } else if (failed) {
-        reject(promise, error);
-      } else if (settled === FULFILLED) {
-        resolve(promise, value);
-      } else if (settled === REJECTED) {
-        reject(promise, value);
-      }
-    }
-
-    var PENDING   = void 0;
-    var SEALED    = 0;
-    var FULFILLED = 1;
-    var REJECTED  = 2;
-
-    function subscribe(parent, child, onFulfillment, onRejection) {
-      var subscribers = parent._subscribers;
-      var length = subscribers.length;
-
-      subscribers[length] = child;
-      subscribers[length + FULFILLED] = onFulfillment;
-      subscribers[length + REJECTED]  = onRejection;
-    }
-
-    function publish(promise, settled) {
-      var child, callback, subscribers = promise._subscribers, detail = promise._detail;
-
-      for (var i = 0; i < subscribers.length; i += 3) {
-        child = subscribers[i];
-        callback = subscribers[i + settled];
-
-        invokeCallback(settled, child, callback, detail);
-      }
-
-      promise._subscribers = null;
-    }
-
-    Promise.prototype = {
-      constructor: Promise,
-
-      _state: undefined,
-      _detail: undefined,
-      _subscribers: undefined,
-
-      then: function(onFulfillment, onRejection) {
-        var promise = this;
-
-        var thenPromise = new this.constructor(function() {});
-
-        if (this._state) {
-          var callbacks = arguments;
-          config.async(function invokePromiseCallback() {
-            invokeCallback(promise._state, thenPromise, callbacks[promise._state - 1], promise._detail);
-          });
-        } else {
-          subscribe(this, thenPromise, onFulfillment, onRejection);
-        }
-
-        return thenPromise;
-      },
-
-      'catch': function(onRejection) {
-        return this.then(null, onRejection);
-      }
-    };
-
-    Promise.all = all;
-    Promise.cast = cast;
-    Promise.race = race;
-    Promise.resolve = staticResolve;
-    Promise.reject = staticReject;
-
-    function handleThenable(promise, value) {
-      var then = null,
-      resolved;
-
-      try {
-        if (promise === value) {
-          throw new TypeError("A promises callback cannot return that same promise.");
-        }
-
-        if (objectOrFunction(value)) {
-          then = value.then;
-
-          if (isFunction(then)) {
-            then.call(value, function(val) {
-              if (resolved) { return true; }
-              resolved = true;
-
-              if (value !== val) {
-                resolve(promise, val);
-              } else {
-                fulfill(promise, val);
-              }
-            }, function(val) {
-              if (resolved) { return true; }
-              resolved = true;
-
-              reject(promise, val);
-            });
-
-            return true;
-          }
-        }
-      } catch (error) {
-        if (resolved) { return true; }
-        reject(promise, error);
-        return true;
-      }
-
-      return false;
-    }
-
-    function resolve(promise, value) {
-      if (promise === value) {
-        fulfill(promise, value);
-      } else if (!handleThenable(promise, value)) {
-        fulfill(promise, value);
-      }
-    }
-
-    function fulfill(promise, value) {
-      if (promise._state !== PENDING) { return; }
-      promise._state = SEALED;
-      promise._detail = value;
-
-      config.async(publishFulfillment, promise);
-    }
-
-    function reject(promise, reason) {
-      if (promise._state !== PENDING) { return; }
-      promise._state = SEALED;
-      promise._detail = reason;
-
-      config.async(publishRejection, promise);
-    }
-
-    function publishFulfillment(promise) {
-      publish(promise, promise._state = FULFILLED);
-    }
-
-    function publishRejection(promise) {
-      publish(promise, promise._state = REJECTED);
-    }
-
-    __exports__.Promise = Promise;
-  });
-define("promise/race", 
-  ["./utils","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    /* global toString */
-    var isArray = __dependency1__.isArray;
-
-    /**
-      `RSVP.race` allows you to watch a series of promises and act as soon as the
-      first promise given to the `promises` argument fulfills or rejects.
-
-      Example:
-
-      ```javascript
-      var promise1 = new RSVP.Promise(function(resolve, reject){
-        setTimeout(function(){
-          resolve("promise 1");
-        }, 200);
-      });
-
-      var promise2 = new RSVP.Promise(function(resolve, reject){
-        setTimeout(function(){
-          resolve("promise 2");
-        }, 100);
-      });
-
-      RSVP.race([promise1, promise2]).then(function(result){
-        // result === "promise 2" because it was resolved before promise1
-        // was resolved.
-      });
-      ```
-
-      `RSVP.race` is deterministic in that only the state of the first completed
-      promise matters. For example, even if other promises given to the `promises`
-      array argument are resolved, but the first completed promise has become
-      rejected before the other promises became fulfilled, the returned promise
-      will become rejected:
-
-      ```javascript
-      var promise1 = new RSVP.Promise(function(resolve, reject){
-        setTimeout(function(){
-          resolve("promise 1");
-        }, 200);
-      });
-
-      var promise2 = new RSVP.Promise(function(resolve, reject){
-        setTimeout(function(){
-          reject(new Error("promise 2"));
-        }, 100);
-      });
-
-      RSVP.race([promise1, promise2]).then(function(result){
-        // Code here never runs because there are rejected promises!
-      }, function(reason){
-        // reason.message === "promise2" because promise 2 became rejected before
-        // promise 1 became fulfilled
-      });
-      ```
-
-      @method race
-      @for RSVP
-      @param {Array} promises array of promises to observe
-      @param {String} label optional string for describing the promise returned.
-      Useful for tooling.
-      @return {Promise} a promise that becomes fulfilled with the value the first
-      completed promises is resolved with if the first completed promise was
-      fulfilled, or rejected with the reason that the first completed promise
-      was rejected with.
-    */
-    function race(promises) {
-      /*jshint validthis:true */
-      var Promise = this;
-
-      if (!isArray(promises)) {
-        throw new TypeError('You must pass an array to race.');
-      }
-      return new Promise(function(resolve, reject) {
-        var results = [], promise;
-
-        for (var i = 0; i < promises.length; i++) {
-          promise = promises[i];
-
-          if (promise && typeof promise.then === 'function') {
-            promise.then(resolve, reject);
-          } else {
-            resolve(promise);
-          }
-        }
-      });
-    }
-
-    __exports__.race = race;
-  });
-define("promise/reject", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    /**
-      `RSVP.reject` returns a promise that will become rejected with the passed
-      `reason`. `RSVP.reject` is essentially shorthand for the following:
-
-      ```javascript
-      var promise = new RSVP.Promise(function(resolve, reject){
-        reject(new Error('WHOOPS'));
-      });
-
-      promise.then(function(value){
-        // Code here doesn't run because the promise is rejected!
-      }, function(reason){
-        // reason.message === 'WHOOPS'
-      });
-      ```
-
-      Instead of writing the above, your code now simply becomes the following:
-
-      ```javascript
-      var promise = RSVP.reject(new Error('WHOOPS'));
-
-      promise.then(function(value){
-        // Code here doesn't run because the promise is rejected!
-      }, function(reason){
-        // reason.message === 'WHOOPS'
-      });
-      ```
-
-      @method reject
-      @for RSVP
-      @param {Any} reason value that the returned promise will be rejected with.
-      @param {String} label optional string for identifying the returned promise.
-      Useful for tooling.
-      @return {Promise} a promise that will become rejected with the given
-      `reason`.
-    */
-    function reject(reason) {
-      /*jshint validthis:true */
-      var Promise = this;
-
-      return new Promise(function (resolve, reject) {
-        reject(reason);
-      });
-    }
-
-    __exports__.reject = reject;
-  });
-define("promise/resolve", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    /**
-      `RSVP.resolve` returns a promise that will become fulfilled with the passed
-      `value`. `RSVP.resolve` is essentially shorthand for the following:
-
-      ```javascript
-      var promise = new RSVP.Promise(function(resolve, reject){
-        resolve(1);
-      });
-
-      promise.then(function(value){
-        // value === 1
-      });
-      ```
-
-      Instead of writing the above, your code now simply becomes the following:
-
-      ```javascript
-      var promise = RSVP.resolve(1);
-
-      promise.then(function(value){
-        // value === 1
-      });
-      ```
-
-      @method resolve
-      @for RSVP
-      @param {Any} value value that the returned promise will be resolved with
-      @param {String} label optional string for identifying the returned promise.
-      Useful for tooling.
-      @return {Promise} a promise that will become fulfilled with the given
-      `value`
-    */
-    function resolve(value) {
-      /*jshint validthis:true */
-      var Promise = this;
-      return new Promise(function(resolve, reject) {
-        resolve(value);
-      });
-    }
-
-    __exports__.resolve = resolve;
-  });
-define("promise/utils", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    function objectOrFunction(x) {
-      return isFunction(x) || (typeof x === "object" && x !== null);
-    }
-
-    function isFunction(x) {
-      return typeof x === "function";
-    }
-
-    function isArray(x) {
-      return Object.prototype.toString.call(x) === "[object Array]";
-    }
-
-    // Date.now is not available in browsers < IE9
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now#Compatibility
-    var now = Date.now || function() { return new Date().getTime(); };
-
-
-    __exports__.objectOrFunction = objectOrFunction;
-    __exports__.isFunction = isFunction;
-    __exports__.isArray = isArray;
-    __exports__.now = now;
-  });
-requireModule('promise/polyfill').polyfill();
-}());
-/**
-    The AeroGear.ajax is used to perform Ajax requests.
-    @status Experimental
-    @param {Object} [settings={}] - the settings to configure the request
-    @param {String} [settings.url] - the url to send the request to
-    @param {String} [settings.type="GET"] - the type of the request
-    @param {String} [settings.dataType="json"] - the data type of the recipient's response
-    @param {String} [settings.accept="application/json"] - the media types which are acceptable for the recipient's response
-    @param {String} [settings.contentType="application/json"] - the media type of the entity-body sent to the recipient
-    @param {Object} [settings.headers] - the HTTP request headers
-    @param {Object} [settings.params] - contains query parameters to be added in URL in case of GET request or in request body in case of POST and application/x-www-form-urlencoded content type
-    @param {Object} [settings.data] - the data to be sent to the recipient
-    @returns {Object} An ES6 Promise - the object returned will look like:
-
-    {
-        data: dataOrError, - the data or an error
-        statusText: statusText, - the status of the response
-        agXHR: request - the xhr request object
-    };
-
-    @example
-
-        var es6promise = AeroGear.ajax({
-            type: "GET",
-            params: {
-                param1: "val1"
-            },
-            url: "http://SERVER:PORT/CONTEXT"
-        });
-*/
-AeroGear.ajax = function( settings ) {
-    return new Promise( function( resolve, reject ) {
-        settings = settings || {};
-
-        var request = new XMLHttpRequest(),
-            that = this,
-            requestType = ( settings.type || "GET" ).toUpperCase(),
-            responseType = ( settings.dataType || "json" ).toLowerCase(),
-            accept = ( settings.accept || "application/json" ).toLowerCase(),
-            // TODO: compare contentType by checking if it starts with some value since it might contains the charset as well
-            contentType = ( settings.contentType || "application/json" ).toLowerCase(),
-            header,
-            name,
-            urlEncodedData = [],
-            url = settings.url,
-            data = settings.data;
-
-        if ( settings.params ) {
-            // encode params
-            if( requestType === "GET" || ( requestType === "POST" && contentType === "application/x-www-form-urlencoded" ) ) {
-                for( name in settings.params ) {
-                    urlEncodedData.push( encodeURIComponent( name ) + "=" + encodeURIComponent( settings.params[ name ] || "" ) );
-                }
-            // add params in request body
-            } else if ( contentType === "application/json" ) {
-                data = data || {};
-                data.params = data.params || {};
-                AeroGear.extend( data.params,  settings.params );
-            }
-        }
-
-        if ( contentType === "application/x-www-form-urlencoded" ) {
-            if ( data ) {
-                for( name in data ) {
-                    urlEncodedData.push( encodeURIComponent( name ) + '=' + encodeURIComponent( data[ name ] ) );
-                }
-            }
-            data = urlEncodedData.join( "&" );
-        }
-
-        // if is GET request & URL params exist then add them in URL
-        if( requestType === "GET" && urlEncodedData.length > 0 ) {
-            url += "?" + urlEncodedData.join( "&" );
-        }
-
-        request.open( requestType, url, true, settings.username, settings.password );
-
-        request.responseType = responseType;
-        request.setRequestHeader( "Content-Type", contentType );
-        request.setRequestHeader( "Accept", accept );
-
-        if( settings.headers ) {
-            for ( header in settings.headers ) {
-                request.setRequestHeader( header, settings.headers[ header ] );
-            }
-        }
-
-        // Success and 400's
-        request.onload = function() {
-            var status = ( request.status < 400 ) ? "success" : "error",
-                promiseValue = that._createPromiseValue( request, status );
-
-            if( status === "success" ) {
-                return resolve( promiseValue );
-            }
-
-            return reject( promiseValue );
-        };
-
-        // Network errors
-        request.onerror = function() {
-            var status = "error";
-
-            reject( that._createPromiseValue( request, status ) );
-        };
-
-        // create promise arguments
-        this._createPromiseValue = function( request, status ) {
-            var statusText = request.statusText || status,
-                dataOrError = ( responseType === 'text' || responseType === '') ? request.responseText : request.response;
-
-            return {
-                data: dataOrError,
-                statusText: statusText,
-                agXHR: request
-            };
-        };
-
-        request.send( data );
-    });
-};
 
 /**
     A collection of data connections (stores) and their corresponding data models. This object provides a standard way to interact with client side data no matter the data format or storage mechanism used.
@@ -3203,304 +2251,9 @@ AeroGear.DataManager.adapters.WebSQL.prototype.filter = function( filterParamete
 AeroGear.DataManager.validateAdapter( "WebSQL", AeroGear.DataManager.adapters.WebSQL );
 
 /**
-    The AeroGear.Authorization namespace provides an authentication API.
-    @status Experimental
-    @class
-    @param {String|Array|Object} [config] - A configuration for the service(s) being created along with the authorizer. If an object or array containing objects is used, the objects can have the following properties:
-    @param {String} config.name - the name that the module will later be referenced by
-    @param {String} [config.type="OAuth2"] - the type of module as determined by the adapter used
-    @param {Object} [config.settings={}] - the settings to be passed to the adapter. For specific settings, see the documentation for the adapter you are using.
-    @returns {Object} The created authorizer containing any authz services that may have been created
-    @example
-    // Create an empty authorizer
-    var authz = AeroGear.Authorization();
- */
-AeroGear.Authorization = function( config ) {
-    // Allow instantiation without using new
-    if ( !( this instanceof AeroGear.Authorization ) ) {
-        return new AeroGear.Authorization( config );
-    }
-
-    // Super constructor
-    AeroGear.Core.call( this );
-
-    this.lib = "Authorization";
-    this.type = config ? config.type || "OAuth2" : "OAuth2";
-
-    /**
-        The name used to reference the collection of service instances created from the adapters
-        @memberOf AeroGear.Authorization
-        @type Object
-        @default services
-     */
-    this.collectionName = "services";
-
-    this.add( config );
-};
-
-AeroGear.Authorization.prototype = AeroGear.Core;
-AeroGear.Authorization.constructor = AeroGear.Authorization;
-
-/**
-    The adapters object is provided so that adapters can be added to the AeroGear.Authorization namespace dynamically and still be accessible to the add method
-    @augments AeroGear.Authorization
- */
-AeroGear.Authorization.adapters = {};
-
-/**
-    The OAuth2 adapter is the default type used when creating a new authorization module. It uses AeroGear.ajax to communicate with the server.
-    This constructor is instantiated when the "Authorizer.add()" method is called
-    @status Experimental
-    @constructs AeroGear.Authorization.adapters.OAuth2
-    @param {String} name - the name used to reference this particular authz module
-    @param {Object} settings={} - the settings to be passed to the adapter
-    @param {String} settings.clientId - the client id/ app Id of the protected service
-    @param {String} settings.redirectURL - the URL to redirect to
-    @param {String} settings.authEndpoint - the endpoint for authorization
-    @param {String} [settings.validationEndpoint] - the optional endpoint to validate your token.  Not in the Spec, but recommend for use with Google's API's
-    @param {String} settings.scopes - a space separated list of "scopes" or things you want to access
-    @returns {Object} The created authz module
-    @example
-    // Create an empty Authenticator
-    var authz = AeroGear.Authorization();
-
-    authz.add({
-        name: "coolThing",
-        settings: {
-            clientId: "12345",
-            redirectURL: "http://localhost:3000/redirector.html",
-            authEndpoint: "http://localhost:3000/v1/authz",
-            scopes: "userinfo coolstuff"
-        }
-    });
- */
-AeroGear.Authorization.adapters.OAuth2 = function( name, settings ) {
-    // Allow instantiation without using new
-    if ( !( this instanceof AeroGear.Authorization.adapters.OAuth2 ) ) {
-        return new AeroGear.Authorization.adapters.OAuth2( name, settings );
-    }
-
-    settings = settings || {};
-
-    // Private Instance vars
-    var state = uuid(), //Recommended in the spec,
-        clientId = settings.clientId, //Required by the spec
-        redirectURL = settings.redirectURL, //optional in the spec, but doesn't make sense without it,
-        validationEndpoint = settings.validationEndpoint, //optional,  not in the spec, but recommend to use with Google's API's
-        scopes = settings.scopes, //Optional by the spec
-        accessToken,
-        localStorageName = "ag-oauth2-" + clientId,
-        authEndpoint = settings.authEndpoint + "?" +
-            "response_type=token" +
-            "&redirect_uri=" + encodeURIComponent( redirectURL ) +
-            "&scope=" + encodeURIComponent( scopes ) +
-            "&state=" + encodeURIComponent( state ) +
-            "&client_id=" + encodeURIComponent( clientId );
-
-    // Privileged Methods
-    /**
-        Returns the value of the private settings var
-        @private
-        @augments OAuth2
-     */
-    this.getAccessToken = function() {
-        if( localStorage[ localStorageName ] ) {
-            accessToken = JSON.parse( localStorage[ localStorageName ] ).accessToken;
-        }
-
-        return accessToken;
-    };
-
-    /**
-        Returns the value of the private settings var
-        @private
-        @augments OAuth2
-     */
-    this.getState = function() {
-        return state;
-    };
-
-    /**
-        Returns the value of the private settings var
-        @private
-        @augments OAuth2
-     */
-    this.getClientId = function() {
-        return clientId;
-    };
-
-    /**
-        Returns the value of the private settings var
-        @private
-        @augments OAuth2
-     */
-    this.getLocalStorageName = function() {
-        return localStorageName;
-    };
-
-    /**
-        Returns the value of the private settings var
-        @private
-        @augments OAuth2
-     */
-    this.getValidationEndpoint = function() {
-        return validationEndpoint;
-    };
-
-    /**
-        Enrich the error response with authentication endpoint URL and re-throw the error
-        @private
-        @augments OAuth2
-     */
-    this.enrichErrorAndRethrow = function( err ) {
-        err = err || {};
-        throw AeroGear.extend( err, { authURL: authEndpoint } );
-    };
-
-    /**
-        Returns the value of a parsed query string
-        @private
-        @augments OAuth2
-     */
-    this.parseQueryString = function( locationString ) {
-        // taken from https://developers.google.com/accounts/docs/OAuth2Login
-        // First, parse the query string
-        var params = {},
-            queryString = locationString.substr( locationString.indexOf( "#" ) + 1 ),
-            regex = /([^&=]+)=([^&]*)/g,
-            m;
-        while ( ( m = regex.exec(queryString) ) ) {
-            params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-        }
-        return params;
-    };
-};
-
-/**
-    Validate the Authorization endpoints - Takes the querystring that is returned after the "dance" unparsed.
-    @param {String} queryString - The returned query string to be parsed
-    @returns {Object} The ES6 promise (exposes AeroGear.ajax response as a response parameter; if an error is returned, the authentication URL will be appended to the response object)
-    @example
-    // Create the Authorizer
-    var authz = AeroGear.Authorization();
-
-    authz.add({
-        name: "coolThing",
-        settings: {
-            clientId: "12345",
-            redirectURL: "http://localhost:3000/redirector.html",
-            authEndpoint: "http://localhost:3000/v1/authz",
-            scopes: "userinfo coolstuff"
-        }
-    });
-
-    // Make the call.
-    authz.services.coolThing.execute({url: "http://localhost:3000/v1/authz/endpoint", type: "GET"})
-        .then( function( response ){
-            ...
-        })
-        .catch( function( error ) {
-            // an error happened, so take the authURL and do the "OAuth2 Dance",
-        });
-    });
-
-    // After a successful response from the "OAuth2 Dance", validate that the query string is valid, If all is well, the access_token will be stored.
-    authz.services.coolThing.validate( responseFromAuthEndpoint )
-        .then( function( response ){
-            ...
-        })
-        .catch( function( error ) {
-            ...
-        });
-
- */
-AeroGear.Authorization.adapters.OAuth2.prototype.validate = function( queryString ) {
-
-    var that = this,
-        parsedQuery = this.parseQueryString( queryString ),
-        state = this.getState(),
-        promise;
-
-    promise = new Promise( function( resolve, reject ) {
-
-        // Make sure that the "state" value returned is the same one we sent
-        if( parsedQuery.state !== state ) {
-            // No Good
-            reject( { error: "invalid_request", state: state, error_description: "state's do not match"  } );
-            return;
-        }
-
-        if( that.getValidationEndpoint() ) {
-            AeroGear.ajax({ url: that.getValidationEndpoint() + "?access_token=" + parsedQuery.access_token })
-                .then( function( response ) {
-                    // Must Check the audience field that is returned.  This should be the same as the registered clientID
-                    // This value is a JSON object that is in xhr.response
-                    if( that.getClientId() !== response.agXHR.response.audience ) {
-                        reject( { "error": "invalid_token" } );
-                        return;
-                    }
-                    // Perhaps we can use crypt here to be more secure
-                    localStorage.setItem( that.getLocalStorageName(), JSON.stringify( { "accessToken": parsedQuery.access_token } ) );
-                    resolve( parsedQuery );
-                })
-                .catch( function( err ) {
-                    reject( { "error": "invalid_token" } );
-                });
-        } else {
-            // The Spec does not specify that you need to validate the token
-            reject( parsedQuery );
-        }
-    });
-
-    return promise
-        .catch( this.enrichErrorAndRethrow );
-};
-
-/**
-    @param {Object} options={} - Options to pass to the execute method
-    @param {String} [options.type="GET"] - the type of the request
-    @param {String} [options.url] - the url of the secured endpoint you want to access
-    @returns {Object} The ES6 promise (exposes AeroGear.ajax response as a response parameter; if an error is returned, the authentication URL will be appended to the response object)
-    @example
-    // Create the Authorizer
-    var authz = AeroGear.Authorization();
-
-    authz.add({
-        name: "coolThing",
-        settings: {
-            clientId: "12345",
-            redirectURL: "http://localhost:3000/redirector.html",
-            authEndpoint: "http://localhost:3000/v1/authz",
-            scopes: "userinfo coolstuff"
-        }
-    });
-
-
-    // Make the authorization call.
-    authz.services.coolThing.execute()
-        .then( function( response ){
-            ...
-        })
-        .catch( function( error ) {
-            ...
-        });
- */
-AeroGear.Authorization.adapters.OAuth2.prototype.execute = function( options ) {
-    options = options || {};
-    var url = options.url + "?access_token=" + this.getAccessToken(),
-        contentType = "application/x-www-form-urlencoded";
-
-    return AeroGear.ajax({
-            url: url,
-            type: options.type,
-            contentType: contentType
-        })
-        .catch( this.enrichErrorAndRethrow );
-};
-
-/**
     The AeroGear.Notifier namespace provides a messaging API. Through the use of adapters, this library provides common methods like connect, disconnect, subscribe, unsubscribe and publish.
-    @status Stable
+    @deprecated since 2.1.0 and will be removed in a future release.
+    @status Deprecated
     @class
     @augments AeroGear.Core
     @param {String|Array|Object} [config] - A configuration for the client(s) being created along with the notifier. If an object or array containing objects is used, the objects can have the following properties:
@@ -4168,7 +2921,8 @@ AeroGear.Notifier.adapters.SimplePush.prototype.unsubscribe = function( channels
 
 /**
     The vertx adapter is the default type used when creating a new notifier client. It uses the vert.x bus and underlying SockJS implementation for messaging.
-    @status Stable
+    @deprecated since 2.1.0 and will be removed in a future release.
+    @status Deprecated
     @constructs AeroGear.Notifier.adapters.vertx
     @param {String} clientName - the name used to reference this particular notifier client
     @param {Object} [settings={}] - the settings to be passed to the adapter
@@ -4476,7 +3230,8 @@ AeroGear.Notifier.adapters.vertx.prototype.send = function( channel, message, pu
 
 /**
     The stomp adapter uses an underlying stomp.js implementation for messaging.
-    @status Stable
+    @deprecated since 2.1.0 and will be removed in a future release.
+    @status Deprecated
     @constructs AeroGear.Notifier.adapters.stompws
     @param {String} clientName - the name used to reference this particular notifier client
     @param {Object} [settings={}] - the settings to be passed to the adapter
@@ -4799,7 +3554,8 @@ AeroGear.Notifier.adapters.stompws.prototype.send = function( channel, message )
 
 /**
     The mqttws adapter uses MQTT over WebSockets for messaging.
-    @status Experimental
+    @deprecated since 2.1.0 and will be removed in a future release.
+    @status Deprecated
     @constructs AeroGear.Notifier.adapters.mqttws
     @param {String} clientName - The name used to reference this particular notifier client
     @param {Object} [settings={}] - The settings to be passed to the adapter
@@ -5242,6 +3998,55 @@ AeroGear.Notifier.adapters.mqttws.prototype.send = function( channel, message, s
         }
 
         pushServerURL = pushServerURL.substr(-1) === '/' ? pushServerURL : pushServerURL + '/';
+
+        this._ajax = function( settings ) {
+            return new Promise( function( resolve, reject ) {
+                var header,
+                    that = this,
+                    request = new XMLHttpRequest();
+
+
+                request.open( settings.type || "GET", settings.url, true, settings.username, settings.password );
+
+                request.responseType = "json";
+                request.setRequestHeader( "Content-Type", "application/json" );
+                request.setRequestHeader( "Accept", "application/json" );
+
+                if( settings.headers ) {
+                    for ( header in settings.headers ) {
+                        request.setRequestHeader( header, settings.headers[ header ] );
+                    }
+                }
+
+                // Success and 400's
+                request.onload = function() {
+                    var status = ( request.status < 400 ) ? "success" : "error",
+                        promiseValue = that._createPromiseValue( request, status );
+
+                    if( status === "success" ) {
+                        return resolve( promiseValue );
+                    }
+
+                    return reject( promiseValue );
+                };
+
+                // Network errors
+                request.onerror = function() {
+                    return reject( that._createPromiseValue( request, "error" ) );
+                };
+
+                // create promise arguments
+                this._createPromiseValue = function( request, status ) {
+                    return {
+                        data: request.response,
+                        statusText: request.statusText || status,
+                        agXHR: request
+                    };
+                };
+
+                request.send( settings.data );
+            });
+        };
         /**
             Performs a register request against the UnifiedPush Server using the given metadata which represents a client that wants to register with the server.
             @param {Object} settings The settings to pass in
@@ -5252,7 +4057,7 @@ AeroGear.Notifier.adapters.mqttws.prototype.send = function( channel, message, s
             @param {String} [settings.metadata.operatingSystem] - Useful on Hybrid platforms like Apache Cordova to specifiy the underlying operating system.
             @param {String} [settings.metadata.osVersion] - Useful on Hybrid platforms like Apache Cordova to specify the version of the underlying operating system.
             @param {String} [settings.metadata.deviceType] - Useful on Hybrid platforms like Apache Cordova to specify the type of the used device, like iPad or Android-Phone.
-            @returns {Object} An ES6 Promise created by AeroGear.ajax
+            @returns {Object} An ES6 Promise
          */
         this.registerWithPushServer = function( settings ) {
             settings = settings || {};
@@ -5266,9 +4071,7 @@ AeroGear.Notifier.adapters.mqttws.prototype.send = function( channel, message, s
             // Make sure that settings.metadata.categories is an Array
             metadata.categories = Array.isArray( metadata.categories ) ? metadata.categories : ( metadata.categories ? [ metadata.categories ] : [] );
 
-            return AeroGear.ajax({
-                contentType: "application/json",
-                dataType: "json",
+            return this._ajax({
                 type: "POST",
                 url: pushServerURL + "rest/registry/device",
                 headers: {
@@ -5281,12 +4084,10 @@ AeroGear.Notifier.adapters.mqttws.prototype.send = function( channel, message, s
         /**
             Performs an unregister request against the UnifiedPush Server for the given deviceToken. The deviceToken identifies the client within its PushNetwork. On Android this is the registrationID, on iOS this is the deviceToken and on SimplePush this is the URL of the given SimplePush server/network.
             @param {String} deviceToken - unique String which identifies the client that is being unregistered.
-            @returns {Object} An ES6 Promise created by AeroGear.ajax
+            @returns {Object} An ES6 Promise
          */
         this.unregisterWithPushServer = function( deviceToken ) {
-            return AeroGear.ajax({
-                contentType: "application/json",
-                dataType: "json",
+            return this._ajax({
                 type: "DELETE",
                 url: pushServerURL + "rest/registry/device/" + deviceToken,
                 headers: {
@@ -5703,6 +4504,853 @@ AeroGear.Crypto = function() {
         }
 
         return this;
+    };
+};
+
+/**
+    The AeroGear Differential Sync Engine.
+    @status Experimental
+    @constructs AeroGear.DiffSyncEngine
+    @param {Object} config - A configuration
+    @param {String} [config.type = "jsonPatch"] - the type of sync engine, defaults to jsonPatch
+    @returns {Object} diffSyncEngine - The created DiffSyncEngine
+ */
+AeroGear.DiffSyncEngine = function( config ) {
+    if ( !( this instanceof AeroGear.DiffSyncEngine ) ) {
+        return new AeroGear.DiffSyncEngine( config );
+    }
+
+    this.lib = "DiffSyncEngine";
+    this.type = config ? config.type || "jsonPatch" : "jsonPatch";
+
+    return new AeroGear.DiffSyncEngine.adapters[ this.type ]();
+};
+
+/**
+    The adapters object is provided so that adapters can be added to the AeroGear.DiffSyncEngine namespace dynamically and still be accessible to the add method
+    @augments AeroGear.DiffSyncEngine
+ */
+AeroGear.DiffSyncEngine.adapters = {};
+
+/**
+    The diffMatchPatch adapter.
+    @status Experimental
+    @constructs AeroGear.DiffSyncEngine.adapters.diffMatchPatch
+    @returns {Object} The created adapter
+ */
+AeroGear.DiffSyncEngine.adapters.diffMatchPatch = function() {
+    if ( !( this instanceof AeroGear.DiffSyncEngine.adapters.diffMatchPatch ) ) {
+        return new AeroGear.DiffSyncEngine.adapters.diffMatchPatch();
+    }
+
+    var stores = {
+            docs: [],
+            shadows: [],
+            backups: [],
+            edits: []
+        },
+        dmp = new diff_match_patch();
+
+
+    /**
+     * Adds a new document to this sync engine.
+     *
+     * @param doc the document to add.
+     */
+    this.addDocument = function( doc ) {
+        this._saveDocument( JSON.parse( JSON.stringify( doc ) ) );
+        this._saveShadow( JSON.parse( JSON.stringify( doc ) ) );
+        this._saveShadowBackup( JSON.parse( JSON.stringify( doc ) ), 0 );
+    };
+
+    /**
+     * Performs the client side of a differential sync.
+     * When a client makes an update to it's document, it is first diffed against the shadow
+     * document. The result of this is an {@link Edits} instance representing the changes.
+     * There might be pending edits that represent edits that have not made it to the server
+     * for some reason (for example packet drop). If a pending edit exits the contents (the diffs)
+     * of the pending edit will be included in the returned Edits from this method.
+     *
+     * @param doc the updated document.
+     * @returns {object} containing the diffs that between the clientDoc and it's shadow doc.
+     */
+    this.diff = function( doc ) {
+        var diffDoc, patchMsg, docContent, shadowContent, pendingEdits,
+            shadow = this._readData( doc.id, "shadows" )[ 0 ];
+
+        if ( typeof doc.content === "string" ) {
+            docContent = doc.content;
+            shadowContent = shadow.content;
+        } else {
+            docContent = JSON.stringify( doc.content );
+            shadowContent = JSON.stringify( shadow.content );
+        }
+
+        patchMsg = {
+            msgType: "patch",
+            id: doc.id,
+            clientId: shadow.clientId,
+            edits: [{
+                clientVersion: shadow.clientVersion,
+                serverVersion: shadow.serverVersion,
+                // currently not implemented but we probably need this for checking the client and server shadow are identical be for patching.
+                checksum: '',
+                diffs: this._asAeroGearDiffs( dmp.diff_main( shadowContent, docContent ) )
+            }]
+        };
+
+        shadow.clientVersion++;
+        shadow.content = doc.content;
+        this._saveShadow( JSON.parse( JSON.stringify( shadow ) ) );
+
+        // add any pending edits from the store
+        pendingEdits = this._getEdits( doc.id );
+        if ( pendingEdits && pendingEdits.length > 0 ) {
+            patchMsg.edits = pendingEdits.concat( patchMsg.edits );
+        }
+
+        return patchMsg;
+    };
+
+    /**
+     * Performs the client side patch process.
+     *
+     * @param patchMsg the patch message that is sent from the server
+     *
+     * @example:
+     * {
+     *   "msgType":"patch",
+     *   "id":"12345",
+     *   "clientId":"3346dff7-aada-4d5f-a3da-c93ff0ffc472",
+     *   "edits":[{
+     *     "clientVersion":0,
+     *     "serverVersion":0,
+     *     "checksum":"5f9844b21c298ea1f3ed7bf37f96e42df03395b",
+     *     "diffs":[
+     *       {"operation":"UNCHANGED","text":"I'm a Je"},
+     *       {"operation":"DELETE","text":"di"}]
+     *   }]
+     * }
+    */
+    this.patch = function( patchMsg ) {
+        // Flow is based on the server side
+        // patch the shadow
+        var patchedShadow = this.patchShadow( patchMsg );
+        // Then patch the document
+        this.patchDocument( patchedShadow );
+        // then save backup shadow
+        this._saveShadowBackup( patchedShadow, patchedShadow.clientVersion );
+
+    };
+
+    this._asAeroGearDiffs = function( diffs ) {
+        return diffs.map(function( value ) {
+            return {
+                operation: this._asAgOperation( value[ 0 ] ),
+                text: value[ 1 ]
+            };
+        }.bind( this ) );
+    };
+
+    this._asDiffMatchPathDiffs = function( diffs ) {
+        return diffs.map( function ( value ) {
+            return [this._asDmpOperation ( value.operation ), value.text];
+        }.bind( this ) );
+    };
+
+    this._asDmpOperation = function( op ) {
+        if ( op === "DELETE" ) {
+            return -1;
+        } else if ( op === "ADD" ) {
+            return 1;
+        }
+        return 0;
+    };
+
+    this._asAgOperation = function( op ) {
+        if ( op === -1 ) {
+            return "DELETE";
+        } else if ( op === 1 ) {
+            return "ADD";
+        }
+        return "UNCHANGED";
+    };
+
+    this.patchShadow = function( patchMsg ) {
+        // First get the shadow document for this doc.id and clientId
+        var i, patched, edit,
+            shadow = this.getShadow( patchMsg.id ),
+            edits = patchMsg.edits;
+        //Iterate over the edits of the doc
+        for ( i = 0; i < edits.length; i++ ) {
+            edit = edits[i];
+
+            //Check for dropped packets?
+            // edit.clientVersion < shadow.ClientVersion
+            if( edit.clientVersion < shadow.clientVersion && !this._isSeeded( edit ) ) {
+                // Dropped packet?  // restore from back
+                shadow = this._restoreBackup( shadow, edit );
+                continue;
+            }
+
+            //check if we already have this one
+            // IF SO discard the edit
+            // edit.serverVersion < shadow.ServerVesion
+            if( edit.serverVersion < shadow.serverVersion ) {
+                // discard edit
+                this._removeEdit( patchMsg.id, edit );
+                continue;
+            }
+
+            //make sure the versions match
+            if( (edit.serverVersion === shadow.serverVersion && edit.clientVersion === shadow.clientVersion) || this._isSeeded( edit )) {
+                // Good ,  Patch the shadow
+                this.applyEditsToShadow( edit, shadow );
+                if ( this._isSeeded( edit ) ) {
+                    shadow.clientVersion = 0;
+                } else if ( edit.clientVersion >= 0 ) {
+                    shadow.serverVersion++;
+                }
+                this._saveShadow( shadow );
+                this._removeEdit( patchMsg.id, edit );
+            }
+        }
+
+        //console.log('patched:', shadow);
+        return shadow;
+    };
+
+    // A seeded patch is when all clients start with a base document. They all send this base version as
+    // part of the addDocument call. The server will respond with a patchMsg enabling the client to
+    // patch it's local version to get the latest updates. Such an edit is identified by a clientVersion
+    // set to '-1'.
+    this._isSeeded = function( edit ) {
+        return edit.clientVersion === -1;
+    };
+
+    this.applyEditsToShadow = function ( edits, shadow ) {
+        var doc, diffs, patches, patchResult;
+
+        doc = typeof shadow.content === 'string' ? shadow.content : JSON.stringify( shadow.content );
+        diffs = this._asDiffMatchPathDiffs( edits.diffs );
+        patches = dmp.patch_make( doc, diffs );
+
+        patchResult = dmp.patch_apply( patches, doc );
+        try {
+            shadow.content = JSON.parse( patchResult[ 0 ] );
+        } catch( e ) {
+            shadow.content = patchResult[ 0 ];
+        }
+        return shadow;
+    };
+
+    this.patchDocument = function( shadow ) {
+        var doc, diffs, patches, patchApplied;
+
+        // first get the document based on the shadowdocs ID
+        doc = this.getDocument( shadow.id );
+
+        // diff the doc and shadow and patch that shizzel
+        diffs = dmp.diff_main( JSON.stringify( doc.content ), JSON.stringify( shadow.content ) );
+
+        patches = dmp.patch_make( JSON.stringify( doc.content ), diffs );
+
+        patchApplied = dmp.patch_apply( patches, JSON.stringify( doc.content ) );
+
+        //save the newly patched document
+        doc.content = JSON.parse( patchApplied[ 0 ] );
+
+        this._saveDocument( doc );
+
+        //return the applied patch?
+        //console.log('patches: ', patchApplied);
+        return patchApplied;
+    };
+
+    this._saveData = function( data, type ) {
+        data = Array.isArray( data ) ? data : [ data ];
+
+        stores[ type ] = data;
+    };
+
+    this._readData = function( id, type ) {
+        return stores[ type ].filter( function( doc ) {
+            return doc.id === id;
+        });
+    };
+
+    this._saveDocument = function( doc ) {
+        this._saveData( doc, "docs" );
+        return doc;
+    };
+
+    this._saveShadow = function( doc ) {
+        var shadow = {
+            id: doc.id,
+            serverVersion: doc.serverVersion || 0,
+            clientId: doc.clientId,
+            clientVersion: doc.clientVersion || 0,
+            content: doc.content
+        };
+
+        this._saveData( shadow, "shadows" );
+        return shadow;
+    };
+
+    this._saveShadowBackup = function( shadow, clientVersion ) {
+        var backup = { id: shadow.id, clientVersion: clientVersion, content: shadow.content };
+        this._saveData( backup, "backups" );
+        return backup;
+    };
+
+    this.getDocument = function( id ) {
+        return this._readData( id, "docs" )[ 0 ];
+    };
+
+    this.getShadow = function( id ) {
+        return this._readData( id, "shadows" )[ 0 ];
+    };
+
+    this.getBackup = function( id ) {
+        return this._readData( id, "backups" )[ 0 ];
+    };
+
+    this._saveEdits = function( patchMsg ) {
+        var record = { id: patchMsg.id, clientId: patchMsg.clientId, edits: patchMsg.edits};
+        this._saveData( record, "edits" );
+        return record;
+    };
+
+    this._getEdits = function( id ) {
+        var patchMessages = this._readData( id, "edits" );
+
+        return patchMessages.length ? patchMessages.edits : [];
+    };
+
+    this._removeEdit = function( documentId,  edit ) {
+        var pendingEdits = this._readData( documentId, "edits" ), i, j, pendingEdit;
+        for ( i = 0; i < pendingEdits.length; i++ ) {
+            pendingEdit = pendingEdits[i];
+            for ( j = 0; j < pendingEdit.edits.length; j++) {
+                if ( pendingEdit.edits[j].serverVersion === edit.serverVersion && pendingEdit.edits[j].clientVersion <= edit.clientVersion) {
+                    pendingEdit.edits.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    };
+
+    this._removeEdits = function( documentId ) {
+        var edits = this._readData( documentId, "edits" ), i;
+        edits.splice(0, edits.length);
+    };
+
+    this._restoreBackup = function( shadow, edit) {
+        var patchedShadow, restoredBackup,
+            backup = this.getBackup( shadow.id );
+
+        if ( edit.clientVersion === backup.clientVersion ) {
+
+            restoredBackup = {
+                id: backup.id,
+                clientVersion: backup.clientVersion,
+                content: backup.content
+            };
+
+            patchedShadow = this.applyEditsToShadow( edit, restoredBackup );
+            restoredBackup.serverVersion++;
+            this._removeEdits( shadow.id );
+
+            return this._saveShadow( patchedShadow );
+        } else {
+            throw "Edit's clientVersion '" + edit.clientVersion + "' does not match the backups clientVersion '" + backup.clientVersion + "'";
+        }
+    };
+};
+
+/**
+    The jsonPath adapter.
+    @status Experimental
+    @constructs AeroGear.DiffSyncEngine.adapters.jsonPatch
+    @returns {Object} The created adapter
+ */
+AeroGear.DiffSyncEngine.adapters.jsonPatch = function() {
+    if ( !( this instanceof AeroGear.DiffSyncEngine.adapters.jsonPatch ) ) {
+        return new AeroGear.DiffSyncEngine.adapters.jsonPatch();
+    }
+
+    var stores = {
+        docs: [],
+        shadows: [],
+        backups: [],
+        edits: []
+    };
+
+    /**
+     * Adds a new document to this sync engine.
+     *
+     * @param doc the document to add.
+     */
+    this.addDocument = function( doc ) {
+        this._saveDocument( JSON.parse( JSON.stringify( doc ) ) );
+        this._saveShadow( JSON.parse( JSON.stringify( doc ) ) );
+        this._saveShadowBackup( JSON.parse( JSON.stringify( doc ) ), 0 );
+    };
+
+    /**
+     * Performs the client side of a differential sync.
+     * When a client makes an update to it's document, it is first diffed against the shadow
+     * document. The result of this is an {@link Edits} instance representing the changes.
+     * There might be pending edits that represent edits that have not made it to the server
+     * for some reason (for example packet drop). If a pending edit exits the contents (the diffs)
+     * of the pending edit will be included in the returned Edits from this method.
+     *
+     * @param doc the updated document.
+     * @returns {object} containing the diffs that between the clientDoc and it's shadow doc.
+     */
+    this.diff = function( doc ) {
+        var patchMsg, pendingEdits,
+            shadow = this._readData( doc.id, "shadows" )[ 0 ];
+
+        patchMsg = {
+            msgType: "patch",
+            id: doc.id,
+            clientId: shadow.clientId,
+            edits: [{
+                clientVersion: shadow.clientVersion,
+                serverVersion: shadow.serverVersion,
+                // currently not implemented but we probably need this for checking the client and server shadow are identical be for patching.
+                checksum: '',
+                diffs: jsonpatch.compare( shadow.content, doc.content )
+            }]
+        };
+
+        shadow.clientVersion++;
+        shadow.content = doc.content;
+        this._saveShadow( JSON.parse( JSON.stringify( shadow ) ) );
+
+        // add any pending edits from the store
+        pendingEdits = this._getEdits( doc.id );
+        if ( pendingEdits && pendingEdits.length > 0 ) {
+            patchMsg.edits = pendingEdits.concat( patchMsg.edits );
+        }
+
+        return patchMsg;
+    };
+
+    /**
+     * Performs the client side patch process.
+     *
+     * @param patchMsg the patch message that is sent from the server
+     *
+     * @example:
+     * {
+     *   "msgType":"patch",
+     *   "id":"12345",
+     *   "clientId":"3346dff7-aada-4d5f-a3da-c93ff0ffc472",
+     *   "edits":[{
+     *     "clientVersion":0,
+     *     "serverVersion":0,
+     *     "checksum":"5f9844b21c298ea1f3ed7bf37f96e42df03395b",
+     *     "diffs":[
+     *       {"operation":"UNCHANGED","text":"I'm a Je"},
+     *       {"operation":"DELETE","text":"di"}]
+     *   }]
+     * }
+    */
+    this.patch = function( patchMsg ) {
+        // Flow is based on the server side
+        // patch the shadow
+        var patchedShadow = this.patchShadow( patchMsg );
+        // Then patch the document
+        this.patchDocument( patchedShadow );
+        // then save backup shadow
+        this._saveShadowBackup( patchedShadow, patchedShadow.clientVersion );
+
+    };
+
+    this.patchShadow = function( patchMsg ) {
+        // First get the shadow document for this doc.id and clientId
+        var i, patched, edit,
+            shadow = this.getShadow( patchMsg.id ),
+            edits = patchMsg.edits;
+        //Iterate over the edits of the doc
+        for ( i = 0; i < edits.length; i++ ) {
+            edit = edits[i];
+
+            //Check for dropped packets?
+            // edit.clientVersion < shadow.ClientVersion
+            if( edit.clientVersion < shadow.clientVersion && !this._isSeeded( edit ) ) {
+                // Dropped packet?  // restore from back
+                shadow = this._restoreBackup( shadow, edit );
+                continue;
+            }
+
+            //check if we already have this one
+            // IF SO discard the edit
+            // edit.serverVersion < shadow.ServerVesion
+            if( edit.serverVersion < shadow.serverVersion ) {
+                // discard edit
+                this._removeEdit( patchMsg.id, edit );
+                continue;
+            }
+
+            //make sure the versions match
+            if( (edit.serverVersion === shadow.serverVersion && edit.clientVersion === shadow.clientVersion) || this._isSeeded( edit )) {
+                // Good ,  Patch the shadow
+                this.applyEditsToShadow( edit, shadow );
+                if ( this._isSeeded( edit ) ) {
+                    shadow.clientVersion = 0;
+                } else if ( edit.clientVersion >= 0 ) {
+                    shadow.serverVersion++;
+                }
+                this._saveShadow( shadow );
+                this._removeEdit( patchMsg.id, edit );
+            }
+        }
+
+        return shadow;
+    };
+
+    // A seeded patch is when all clients start with a base document. They all send this base version as
+    // part of the addDocument call. The server will respond with a patchMsg enabling the client to
+    // patch it's local version to get the latest updates. Such an edit is identified by a clientVersion
+    // set to '-1'.
+    this._isSeeded = function( edit ) {
+        return edit.clientVersion === -1;
+    };
+
+    this.applyEditsToShadow = function ( edits, shadow ) {
+        var patchResult;
+        // returns true or false,  should probably do something with it?
+        patchResult = jsonpatch.apply( shadow.content, edits.diffs );
+        return shadow;
+    };
+
+    this.patchDocument = function( shadow ) {
+        var doc, diffs, patch;
+
+        // first get the document based on the shadowdocs ID
+        doc = this.getDocument( shadow.id );
+
+        diffs = jsonpatch.compare( doc.content, shadow.content );
+
+        patch = jsonpatch.apply( doc.content, diffs );
+
+        //save the newly patched document,  do we save if the apply failed?
+        this._saveDocument( doc );
+
+        return patch;
+    };
+
+    this._saveData = function( data, type ) {
+        data = Array.isArray( data ) ? data : [ data ];
+
+        stores[ type ] = data;
+    };
+
+    this._readData = function( id, type ) {
+        return stores[ type ].filter( function( doc ) {
+            return doc.id === id;
+        });
+    };
+
+    this._saveDocument = function( doc ) {
+        this._saveData( doc, "docs" );
+        return doc;
+    };
+
+    this._saveShadow = function( doc ) {
+        var shadow = {
+            id: doc.id,
+            serverVersion: doc.serverVersion || 0,
+            clientId: doc.clientId,
+            clientVersion: doc.clientVersion || 0,
+            content: doc.content
+        };
+
+        this._saveData( shadow, "shadows" );
+        return shadow;
+    };
+
+    this._saveShadowBackup = function( shadow, clientVersion ) {
+        var backup = { id: shadow.id, clientVersion: clientVersion, content: shadow.content };
+        this._saveData( backup, "backups" );
+        return backup;
+    };
+
+    this.getDocument = function( id ) {
+        return this._readData( id, "docs" )[ 0 ];
+    };
+
+    this.getShadow = function( id ) {
+        return this._readData( id, "shadows" )[ 0 ];
+    };
+
+    this.getBackup = function( id ) {
+        return this._readData( id, "backups" )[ 0 ];
+    };
+
+    this._saveEdits = function( patchMsg ) {
+        var record = { id: patchMsg.id, clientId: patchMsg.clientId, edits: patchMsg.edits};
+        this._saveData( record, "edits" );
+        return record;
+    };
+
+    this._getEdits = function( id ) {
+        var patchMessages = this._readData( id, "edits" );
+
+        return patchMessages.length ? patchMessages.edits : [];
+    };
+
+    this._removeEdit = function( documentId,  edit ) {
+        var pendingEdits = this._readData( documentId, "edits" ), i, j, pendingEdit;
+        for ( i = 0; i < pendingEdits.length; i++ ) {
+            pendingEdit = pendingEdits[i];
+            for ( j = 0; j < pendingEdit.edits.length; j++) {
+                if ( pendingEdit.edits[j].clientVersion <= edit.clientVersion) {
+                    pendingEdit.edits.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    };
+
+    this._removeEdits = function( documentId ) {
+        var edits = this._readData( documentId, "edits" ), i;
+        edits.splice(0, edits.length);
+    };
+
+    this._restoreBackup = function( shadow, edit) {
+        var patchedShadow, restoredBackup,
+            backup = this.getBackup( shadow.id );
+
+        if ( edit.clientVersion === backup.clientVersion ) {
+
+            restoredBackup = {
+                id: backup.id,
+                clientVersion: backup.clientVersion,
+                content: backup.content
+            };
+
+            patchedShadow = this.applyEditsToShadow( edit, restoredBackup );
+            restoredBackup.serverVersion++;
+            this._removeEdits( shadow.id );
+
+            return this._saveShadow( patchedShadow );
+        } else {
+            throw "Edit's clientVersion '" + edit.clientVersion + "' does not match the backups clientVersion '" + backup.clientVersion + "'";
+        }
+    };
+};
+
+/**
+    The AeroGear Differential Sync Client.
+    @status Experimental
+    @constructs AeroGear.DiffSyncClient
+    @param {Object} config - A configuration
+    @param {String} config.serverUrl - the url of the Differential Sync Server
+    @param {Object} [config.syncEngine="AeroGear.DiffSyncEngine"] -
+    @param {function} [config.onopen] - will be called when a connection to the sync server has been opened
+    @param {function} [config.onclose] - will be called when a connection to the sync server has been closed
+    @param {function} [config.onsync] - listens for "sync" events from the sync server
+    @param {function} [config.onerror] - will be called when there are errors from the sync server
+    @returns {object} diffSyncClient - The created DiffSyncClient
+ */
+AeroGear.DiffSyncClient = function ( config ) {
+    if ( ! ( this instanceof AeroGear.DiffSyncClient ) ) {
+        return new AeroGear.DiffSyncClient( config );
+    }
+
+    config = config || {};
+
+    var ws,
+        sendQueue = [],
+        that = this,
+        syncEngine = config.syncEngine || new AeroGear.DiffSyncEngine();
+
+    if ( config.serverUrl === undefined ) {
+        throw new Error( "'config.serverUrl' must be specified" );
+    }
+
+    /**
+        Connects to the Differential Sync Server using WebSockets
+    */
+    this.connect = function() {
+        ws = new WebSocket( config.serverUrl );
+        ws.onopen = function ( e ) {
+            if ( config.onopen ) {
+                config.onopen.apply( this, arguments );
+            }
+
+            while ( sendQueue.length ) {
+                var task = sendQueue.pop();
+                if ( task.type === "add" ) {
+                    send ( task.type, task.msg );
+                } else {
+                    that.sendEdits( task.msg );
+                }
+            }
+        };
+        ws.onmessage = function( e ) {
+            var data, doc;
+
+            try {
+                data = JSON.parse( e.data );
+            } catch( err ) {
+                data = {};
+            }
+
+            if ( data ) {
+                that._patch( data );
+            }
+
+            doc = that.getDocument( data.id );
+
+            if( config.onsync ) {
+                config.onsync.call( this, doc, e );
+            }
+        };
+        ws.onerror = function( e ) {
+            if ( config.onerror ) {
+                config.onerror.apply( this, arguments );
+            }
+        };
+        ws.onclose = function( e ) {
+            if ( config.onclose ) {
+                 config.onclose.apply( this, arguments);
+            }
+        };
+    };
+
+    // connect needs to be callable for implementing reconnect.
+    this.connect();
+
+    /**
+        Disconnects from the Differential Sync Server closing it's Websocket connection
+    */
+    this.disconnect = function() {
+        ws.close();
+    };
+
+    /**
+        patch - an internal method to sync the data with the Sync Engine
+        @param {Object} data - The data to be patched
+    */
+    this._patch = function( data ) {
+        syncEngine.patch( data );
+    };
+
+    /**
+        getDocument - gets the document from the Sync Engine
+        @param {String} id - the id of the document to get
+        @returns {Object} - The document from the sync engine
+    */
+    this.getDocument = function( id ) {
+        return syncEngine.getDocument( id );
+    };
+
+    /**
+        diff - an internal method to perform a diff with the Sync Server
+        @param {Object} data - the data to perform a diff on
+        @returns {Object} - An Object containing the edits from the Sync Engine
+    */
+    this._diff = function( data ) {
+        return syncEngine.diff( data );
+    };
+
+    /**
+        addDocument - Adds a document to the Sync Engine
+        @param {Object} doc - a document to add to the sync engine
+    */
+    this.addDocument = function( doc ) {
+        syncEngine.addDocument( doc );
+
+        if ( ws.readyState === 0 ) {
+            sendQueue.push( { type: "add", msg: doc } );
+        } else if ( ws.readyState === 1 ) {
+            send( "add", doc );
+        }
+    };
+
+    /**
+        sendEdits - an internal method to send the edits from the Sync Engine to the Sync Server
+        @param {Object} edit - the edits to be sent to the server
+    */
+    this._sendEdits = function( edit ) {
+        if ( ws.readyState === WebSocket.OPEN ) {
+            //console.log( 'sending edits:', edit );
+            ws.send( JSON.stringify( edit ) );
+        } else {
+            //console.log("Client is not connected. Add edit to queue");
+            if ( sendQueue.length === 0 ) {
+                sendQueue.push( { type: "patch", msg: edit } );
+            } else {
+                var updated = false;
+                for (var i = 0 ; i < sendQueue.length; i++ ) {
+                    var task = sendQueue[i];
+                    if (task.type === "patch" && task.msg.clientId === edit.clientId && task.msg.id === edit.id) {
+                        for (var j = 0 ; j < edit.edits.length; j++) {
+                            task.msg.edits.push( edit.edits[j] );
+                        }
+                        updated = true;
+                    }
+                }
+                if ( !updated ) {
+                    sendQueue.push( { type: "patch", msg: edit } );
+                }
+            }
+        }
+    };
+
+    /**
+        sync - performs the Sync process
+        @param {Object} data - the Data to be sync'd with the server
+    */
+    this.sync = function( data ) {
+        var edits = that._diff( data );
+        that._sendEdits( edits );
+    };
+
+    /**
+        removeDoc
+        TODO
+    */
+    this.removeDoc = function( doc ) {
+        throw new Error( "Method Not Yet Implemented" );
+    };
+
+    /**
+        fetch - fetch a document from the Sync Server.  Will perform a sync on it
+        @param {String} docId - the id of a document to fetch from the Server
+    */
+    this.fetch = function( docId ) {
+        var doc, edits, task;
+
+        if ( sendQueue.length === 0 ) {
+            doc = syncEngine.getDocument( docId );
+            that.sync( doc );
+        } else {
+            while ( sendQueue.length ) {
+                task = sendQueue.shift();
+                if ( task.type === "add" ) {
+                    send ( task.type, task.msg );
+                } else {
+                    that._sendEdits( task.msg );
+                }
+            }
+        }
+    };
+
+    /**
+        send
+        @param {String} msgType
+        @param {Object} doc
+    */
+    var send = function ( msgType, doc ) {
+        var json = { msgType: msgType, id: doc.id, clientId: doc.clientId, content: doc.content };
+        //console.log ( 'sending ' + JSON.stringify ( json ) );
+        ws.send( JSON.stringify ( json ) );
     };
 };
 })( this );
